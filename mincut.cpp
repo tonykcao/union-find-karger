@@ -7,19 +7,22 @@
 #include <chrono>
 #include <random>
 
+// returns an int from std::cin
 int cinInt() {
     std::string lineIn;
     std::cin >> lineIn;
     return std::stoi(lineIn);
 }
 
+// edge struct
 typedef struct {
     int src;
     int dest;
 } Edge;
 
+// disjoint set data struct
 class UnionFind {
- private:
+private:
     std::vector<int> parent;
     std::vector<int> ranks;
     std::list<Edge> edges;
@@ -28,7 +31,8 @@ class UnionFind {
 
     std::mt19937 generator;
 
- public:
+public:
+    // constructor, automatically takes edge data from stdin
     UnionFind(int nodeCt, int edgeCt) {
         this->nodeCount = nodeCt;
         this->edgeCount = edgeCt;
@@ -43,6 +47,7 @@ class UnionFind {
         this->generator.seed((unsigned)std::chrono::system_clock::now().time_since_epoch().count());
     }
 
+    // find operation with path compression
     int find(int i) {
         while (this->parent[i] != i) {
             this->parent[i] = this->parent[this->parent[i]];
@@ -50,9 +55,11 @@ class UnionFind {
         }
         return i;
     }
-
+    // // unused, here if needed
     // inline bool find(int a, int b) { return find(a) == find(b); }
 
+    // union method with rank based union
+    // named unite since union is a reserved keyword
     void unite(int a, int b) {
         int rootA = find(a);
         int rootB = find(b);
@@ -67,6 +74,8 @@ class UnionFind {
         }
     }
 
+    // returns nth edge in edges member std::list
+    // O(n)
     Edge getEdge(int n) {
         std::list<Edge>::iterator it = this->edges.begin();
         for (int i = 0; i < n; i++) {
@@ -75,10 +84,15 @@ class UnionFind {
         return *it;
     }
 
+    // randomly chooses an edge with member mt19937 generator
+    // uniting it, then calling find on all vert in edges member std::list
+    // deleting any edge that maps one node to itself
+    // decrements nodeCount and edgeCount accordingly
     void collapse() {
         Edge edge = this->getEdge(this->generator() % (this->edgeCount - 1));
         // collapse edge
         unite(edge.src, edge.dest);
+        this->nodeCount--;
         // std::cout << "\n" << edge.src << " " << edge.dest << "\n";
         // set everything to its parents
         // delete every edge that maps to itself
@@ -92,9 +106,12 @@ class UnionFind {
                 it++;
             }
         }
-        this->nodeCount--;
     }
 
+    // runs 1 subroutine of karger's algo
+    // randomly collapsing all edges until 2 nodes remain
+    // returns edge count between them
+    // does not modify class members if successfully finishes
     int karger() {
         // save original state
         std::vector<int> parentTemp = this->parent;
@@ -119,6 +136,7 @@ class UnionFind {
         return cut;
     }
 
+    // returns mincut of graph, fails with probability 1/nodeCount
     int minCut() {
         int n = this->nodeCount;
         int k = .5 * n * (n - 1) * log(n) / log(2);
@@ -131,6 +149,7 @@ class UnionFind {
         return min;
     }
 
+    // debug helper func
     void printUF() {
         std::cout << "Par:\t";
         for (auto p : this->parent) {
@@ -143,6 +162,7 @@ class UnionFind {
         std::cout << "\n";
     }
 
+    // debug helper func
     void printEdges() {
         std::cout << "Src:\t";
         for (auto edge : this->edges) {
@@ -161,7 +181,7 @@ int main() {
     int nodeCount = cinInt();
     int edgeCount = cinInt();
     UnionFind uf(nodeCount, edgeCount);
-    // uf.print();
-    // uf.printEdges();
+    // uf.print(); //debug
+    // uf.printEdges(); //debug
     std::cout << uf.minCut() << "\n";
 }
