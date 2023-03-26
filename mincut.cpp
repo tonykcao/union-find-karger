@@ -32,10 +32,10 @@ class UnionFind {
     UnionFind(int nodeCt, int edgeCt) {
         this->nodeCount = nodeCt;
         this->edgeCount = edgeCt;
-        for (int i = 0; i < edgeCount; i++) {
+        for (int i = 0; i < this->edgeCount; i++) {
             this->edges.push_back(Edge{cinInt(), cinInt()});
         }
-        for (int i = 0; i < nodeCount; i++) {
+        for (int i = 0; i < this->nodeCount; i++) {
             this->parent.push_back(i);
             this->ranks.push_back(1);
         }
@@ -82,7 +82,7 @@ class UnionFind {
         // std::cout << "\n" << edge.src << " " << edge.dest << "\n";
         // set everything to its parents
         // delete every edge that maps to itself
-        for (auto it = edges.begin(); it != edges.end();) {
+        for (auto it = this->edges.begin(); it != this->edges.end();) {
             it->src = find(it->src);
             it->dest = find(it->dest);
             if (it->src == it->dest) {
