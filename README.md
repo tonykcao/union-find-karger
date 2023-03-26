@@ -1,4 +1,4 @@
-# Union Find & Karger's algo
+# Union Find & Karger's Mincut
 Implemented UnionFind class (Disjoint Set) and Karger's mincut algorithm
 
 Optimized with Rank based union `unite()` + Path compression `find()`
